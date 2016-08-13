@@ -1,4 +1,4 @@
-package com.rook.exchange;
+package com.rook.addr;
 
 import android.app.Application;
 import android.test.ApplicationTestCase;
