@@ -7,9 +7,14 @@ import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.LinearLayoutCompat;
 import android.support.v7.widget.Toolbar;
+import android.text.Layout;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.LinearLayout;
+import android.widget.TextView;
 
 import com.backendless.Backendless;
 import com.backendless.BackendlessUser;
@@ -23,6 +28,8 @@ import java.util.concurrent.CountDownLatch;
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
 
+    protected static DrawerLayout drawer;
+    private NavigationView navigationView;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -51,13 +58,13 @@ public class MainActivity extends AppCompatActivity
 //            }
 //        });
 
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
                 this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
         drawer.addDrawerListener(toggle);
         toggle.syncState();
 
-        NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
+        navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
     }
 
@@ -65,6 +72,12 @@ public class MainActivity extends AppCompatActivity
         @Override
         public void handleResponse(BackendlessUser registeredUser) {
             System.out.println("User has been logged in - " + registeredUser.getObjectId());
+            View headerLayout = navigationView.getHeaderView(0);
+            TextView nameText = (TextView) headerLayout.findViewById(R.id.name);
+            TextView emailText = (TextView) headerLayout.findViewById(R.id.email);
+            BackendlessUser user = Backendless.UserService.CurrentUser();
+            nameText.setText(user.getProperty("name").toString());
+            emailText.setText(user.getEmail());
         }
 
         @Override

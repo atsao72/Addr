@@ -35,7 +35,6 @@ public class AccountListAdapter extends BaseAdapter {
 
         this.callbackManager = callbackManager;
         this.facebookCallback = fbCallback;
-
     }
 
     @Override

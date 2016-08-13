@@ -1,5 +1,6 @@
 package com.rook.addr;
 
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -9,6 +10,7 @@ import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
+import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
@@ -32,9 +34,11 @@ public class SettingsActivity extends AppCompatActivity
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.content_settings);
+//        setContentView(R.layout.content_settings);
+        LayoutInflater inflater = (LayoutInflater) this.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        View contentView = inflater.inflate(R.layout.content_settings, null, false);
+        MainActivity.drawer.addView(contentView, 0);
 
-        FacebookSdk.sdkInitialize(getApplicationContext());
         this.callbackManager = CallbackManager.Factory.create();
 
         FacebookCallback<LoginResult> facebookCallback = new FacebookCallback<LoginResult>() {
@@ -65,7 +69,7 @@ public class SettingsActivity extends AppCompatActivity
             }
         };
 
-        ListView listView = (ListView) findViewById(R.id.accountsListView);
+        ListView listView = (ListView) contentView.findViewById(R.id.accountsListView);
         listView.setOnItemClickListener(this);
         listView.setAdapter(new AccountListAdapter(this, callbackManager, facebookCallback, new String[]{"Facebook", "Instagram", "Twitter"}));
 
