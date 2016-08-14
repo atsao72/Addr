@@ -32,16 +32,6 @@ public class MainActivity extends BaseClass
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         // Get number of installs for Facebook insights
-        FacebookSdk.sdkInitialize(getApplicationContext());
-        AppEventsLogger.activateApp(getApplication());
-
-        Backendless.initApp(getBaseContext(), getString(R.string.app_id), getString(R.string.secret_key), BuildConfig.VERSION_NAME);
-
-        if (Backendless.UserService.CurrentUser() == null) {
-            registerUser();
-        } else {
-            loginUser();
-        }
 
         FrameLayout frameLayout = (FrameLayout) findViewById(R.id.content_frame);
         getLayoutInflater().inflate(R.layout.app_bar_main, frameLayout);
@@ -77,54 +67,6 @@ public class MainActivity extends BaseClass
 //        super.onPostCreate(savedInstanceState);
 //        toggle.syncState();
 //    }
-
-    final AsyncCallback<BackendlessUser> loginCallback = new AsyncCallback<BackendlessUser>() {
-        @Override
-        public void handleResponse(BackendlessUser registeredUser) {
-            System.out.println("User has been logged in - " + registeredUser.getObjectId());
-            View headerLayout = navigationView.getHeaderView(0);
-            TextView nameText = (TextView) headerLayout.findViewById(R.id.name);
-            TextView emailText = (TextView) headerLayout.findViewById(R.id.email);
-            BackendlessUser user = Backendless.UserService.CurrentUser();
-            nameText.setText(user.getProperty("name").toString());
-            emailText.setText(user.getEmail());
-        }
-
-        @Override
-        public void handleFault(BackendlessFault backendlessFault) {
-            System.out.println("Server reported an error - " + backendlessFault.getMessage());
-        }
-    };
-
-    public void loginUser() {
-        Backendless.UserService.login("test@gmail.com", "pass1", loginCallback);
-    }
-
-    public void registerUser() {
-        BackendlessUser user = new BackendlessUser();
-        user.setEmail("test@gmail.com");
-        user.setPassword("pass1");
-        user.setProperty("name", "Tester1");
-
-
-        AsyncCallback<BackendlessUser> callback = new AsyncCallback<BackendlessUser>() {
-            @Override
-            public void handleResponse(BackendlessUser registeredUser) {
-                System.out.println("User has been registered - " + registeredUser.getObjectId());
-                Backendless.UserService.login(registeredUser.getEmail(), registeredUser.getPassword(), loginCallback);
-            }
-
-            @Override
-            public void handleFault(BackendlessFault backendlessFault) {
-                System.out.println("Server reported an error - " + backendlessFault.getMessage());
-                if(backendlessFault.getMessage().contains("User already exists")){
-                    loginUser();
-                }
-            }
-        };
-
-        Backendless.UserService.register(user, callback);
-    }
 
     @Override
     public void onBackPressed() {

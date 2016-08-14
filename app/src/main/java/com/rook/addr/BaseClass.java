@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.NavigationView;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
@@ -39,11 +40,19 @@ public class BaseClass extends AppCompatActivity implements NavigationView.OnNav
         drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         toggle = new ActionBarDrawerToggle(
                 this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
+        toggle.setHomeAsUpIndicator(ContextCompat.getDrawable(getApplicationContext(), R.drawable.ic_drawer));
         drawer.addDrawerListener(toggle);
         toggle.syncState();
 
         navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
+        BackendlessUser currentUser = Backendless.UserService.CurrentUser();
+        View headerLayout = navigationView.getHeaderView(0);
+        TextView nameText = (TextView) headerLayout.findViewById(R.id.name);
+        TextView emailText = (TextView) headerLayout.findViewById(R.id.email);
+        nameText.setText(currentUser.getProperty("name").toString());
+        emailText.setText(currentUser.getEmail());
+
     }
 
     @SuppressWarnings("StatementWithEmptyBody")
