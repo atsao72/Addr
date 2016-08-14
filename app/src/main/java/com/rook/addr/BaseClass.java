@@ -52,7 +52,6 @@ public class BaseClass extends AppCompatActivity implements NavigationView.OnNav
         TextView emailText = (TextView) headerLayout.findViewById(R.id.email);
         nameText.setText(currentUser.getProperty("name").toString());
         emailText.setText(currentUser.getEmail());
-
     }
 
     @SuppressWarnings("StatementWithEmptyBody")

@@ -1,33 +1,28 @@
 package com.rook.addr;
 
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
-import android.support.v7.app.ActionBarDrawerToggle;
-import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
 import android.widget.FrameLayout;
-import android.widget.TextView;
+import android.widget.ImageView;
 
 import com.backendless.Backendless;
 import com.backendless.BackendlessUser;
-import com.backendless.async.callback.AsyncCallback;
-import com.backendless.exceptions.BackendlessFault;
-import com.facebook.FacebookSdk;
-import com.facebook.appevents.AppEventsLogger;
+import com.google.zxing.BarcodeFormat;
+import com.google.zxing.WriterException;
+import com.google.zxing.common.BitMatrix;
+import com.google.zxing.qrcode.QRCodeWriter;
 
 public class MainActivity extends BaseClass
         implements NavigationView.OnNavigationItemSelectedListener {
 
-//    protected static DrawerLayout drawer;
-    private static ActionBarDrawerToggle toggle;
-//    private static NavigationView navigationView;
-    private static boolean isFirst = true;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -35,38 +30,18 @@ public class MainActivity extends BaseClass
 
         FrameLayout frameLayout = (FrameLayout) findViewById(R.id.content_frame);
         getLayoutInflater().inflate(R.layout.app_bar_main, frameLayout);
-//        setContentView(R.layout.drawer_layout);
+        final ImageView qrImage = (ImageView) findViewById(R.id.qrImage);
+        try {
+            BackendlessUser user = Backendless.UserService.CurrentUser();
+            Bitmap bitmap = generateQRCodeBitmap(user.getProperty("fb_access_token").toString());
+            qrImage.setImageBitmap(bitmap);
+        } catch (WriterException e) {
+            System.out.println("Error generating QR code");
+        }
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-//        if(isFirst){
-            setSupportActionBar(toolbar);
-//            isFirst = false;
-//        }
-
-//        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-//        fab.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View view) {
-//                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-//                        .setAction("Action", null).show();
-//            }
-//        });
-
-//        drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
-//        toggle = new ActionBarDrawerToggle(
-//                this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
-//        drawer.addDrawerListener(toggle);
-//        toggle.syncState();
-//
-//        navigationView = (NavigationView) findViewById(R.id.nav_view);
-//        navigationView.setNavigationItemSelectedListener(this);
+        setSupportActionBar(toolbar);
     }
-
-//    @Override
-//    protected void onPostCreate(Bundle savedInstanceState) {
-//        super.onPostCreate(savedInstanceState);
-//        toggle.syncState();
-//    }
 
     @Override
     public void onBackPressed() {
@@ -124,5 +99,27 @@ public class MainActivity extends BaseClass
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
         return true;
+    }
+
+    private Bitmap generateQRCodeBitmap(String data) throws WriterException {
+        BitMatrix result;
+        int WIDTH = 600;
+        try {
+            QRCodeWriter writer = new QRCodeWriter();
+            result = writer.encode(data,
+                    BarcodeFormat.QR_CODE, WIDTH, WIDTH);
+        } catch (IllegalArgumentException iae) {
+            // Unsupported format
+            return null;
+        }
+        Bitmap ImageBitmap = Bitmap.createBitmap(WIDTH, WIDTH, Bitmap.Config.ARGB_8888);
+        for (int i = 0; i < WIDTH; i++) {//width
+            for (int j = 0; j < WIDTH; j++) {//height
+                ImageBitmap.setPixel(i, j, result.get(i, j) ? Color.BLACK : Color.WHITE);
+            }
+        }
+//        Bitmap bitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888);
+//        bitmap.setPixels(pixels, 0, width, 0, 0, width, height);
+        return ImageBitmap;
     }
 }

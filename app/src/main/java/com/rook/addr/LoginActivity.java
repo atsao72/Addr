@@ -38,7 +38,6 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         passwordText = (EditText) findViewById(R.id.passwordText);
         Button loginButton = (Button) findViewById(R.id.loginButton);
         loginButton.setOnClickListener(this);
-
     }
 
     @Override
