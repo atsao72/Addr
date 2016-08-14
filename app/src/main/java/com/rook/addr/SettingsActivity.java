@@ -10,10 +10,12 @@ import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
+import android.widget.FrameLayout;
 import android.widget.ListView;
 
 import com.backendless.Backendless;
@@ -28,16 +30,23 @@ import com.facebook.login.widget.LoginButton;
 /**
  * Created by Austin on 8/12/2016.
  */
-public class SettingsActivity extends AppCompatActivity
+public class SettingsActivity extends BaseClass
         implements NavigationView.OnNavigationItemSelectedListener, AdapterView.OnItemClickListener{
     private CallbackManager callbackManager;
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 //        setContentView(R.layout.content_settings);
-        LayoutInflater inflater = (LayoutInflater) this.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-        View contentView = inflater.inflate(R.layout.content_settings, null, false);
-        MainActivity.drawer.addView(contentView, 0);
+        FrameLayout frameLayout = (FrameLayout) findViewById(R.id.content_frame);
+        getLayoutInflater().inflate(R.layout.app_bar_settings, frameLayout);
+//        FrameLayout frameLayout = (FrameLayout) findViewById(R.id.content_frame);
+//        LayoutInflater inflater = (LayoutInflater) this.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+//        View contentView = getLayoutInflater().inflate(R.layout.content_settings, frameLayout);
+//        MainActivity.drawer.addView(contentView, 0);
+
+
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
 
         this.callbackManager = CallbackManager.Factory.create();
 
@@ -69,7 +78,8 @@ public class SettingsActivity extends AppCompatActivity
             }
         };
 
-        ListView listView = (ListView) contentView.findViewById(R.id.accountsListView);
+//        ListView listView = (ListView) contentView.findViewById(R.id.accountsListView);
+        ListView listView = (ListView) findViewById(R.id.accountsListView);
         listView.setOnItemClickListener(this);
         listView.setAdapter(new AccountListAdapter(this, callbackManager, facebookCallback, new String[]{"Facebook", "Instagram", "Twitter"}));
 

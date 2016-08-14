@@ -7,13 +7,11 @@ import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.LinearLayoutCompat;
 import android.support.v7.widget.Toolbar;
-import android.text.Layout;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.LinearLayout;
+import android.widget.FrameLayout;
 import android.widget.TextView;
 
 import com.backendless.Backendless;
@@ -23,13 +21,13 @@ import com.backendless.exceptions.BackendlessFault;
 import com.facebook.FacebookSdk;
 import com.facebook.appevents.AppEventsLogger;
 
-import java.util.concurrent.CountDownLatch;
-
-public class MainActivity extends AppCompatActivity
+public class MainActivity extends BaseClass
         implements NavigationView.OnNavigationItemSelectedListener {
 
-    protected static DrawerLayout drawer;
-    private NavigationView navigationView;
+//    protected static DrawerLayout drawer;
+    private static ActionBarDrawerToggle toggle;
+//    private static NavigationView navigationView;
+    private static boolean isFirst = true;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -37,7 +35,7 @@ public class MainActivity extends AppCompatActivity
         FacebookSdk.sdkInitialize(getApplicationContext());
         AppEventsLogger.activateApp(getApplication());
 
-        Backendless.initApp(getBaseContext(), getString(R.string.app_id), getString(R.string.secret_key), "v1");
+        Backendless.initApp(getBaseContext(), getString(R.string.app_id), getString(R.string.secret_key), BuildConfig.VERSION_NAME);
 
         if (Backendless.UserService.CurrentUser() == null) {
             registerUser();
@@ -45,9 +43,15 @@ public class MainActivity extends AppCompatActivity
             loginUser();
         }
 
-        setContentView(R.layout.activity_main);
+        FrameLayout frameLayout = (FrameLayout) findViewById(R.id.content_frame);
+        getLayoutInflater().inflate(R.layout.app_bar_main, frameLayout);
+//        setContentView(R.layout.drawer_layout);
+
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
+//        if(isFirst){
+            setSupportActionBar(toolbar);
+//            isFirst = false;
+//        }
 
 //        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
 //        fab.setOnClickListener(new View.OnClickListener() {
@@ -58,15 +62,21 @@ public class MainActivity extends AppCompatActivity
 //            }
 //        });
 
-        drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
-        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
-                this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
-        drawer.addDrawerListener(toggle);
-        toggle.syncState();
-
-        navigationView = (NavigationView) findViewById(R.id.nav_view);
-        navigationView.setNavigationItemSelectedListener(this);
+//        drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+//        toggle = new ActionBarDrawerToggle(
+//                this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
+//        drawer.addDrawerListener(toggle);
+//        toggle.syncState();
+//
+//        navigationView = (NavigationView) findViewById(R.id.nav_view);
+//        navigationView.setNavigationItemSelectedListener(this);
     }
+
+//    @Override
+//    protected void onPostCreate(Bundle savedInstanceState) {
+//        super.onPostCreate(savedInstanceState);
+//        toggle.syncState();
+//    }
 
     final AsyncCallback<BackendlessUser> loginCallback = new AsyncCallback<BackendlessUser>() {
         @Override
@@ -163,6 +173,8 @@ public class MainActivity extends AppCompatActivity
         } else if (id == R.id.nav_settings) {
             Intent intent = new Intent(this, SettingsActivity.class);
             startActivity(intent);
+            finish();
+            drawer.closeDrawers();
         } else if (id == R.id.nav_send) {
 
         }
