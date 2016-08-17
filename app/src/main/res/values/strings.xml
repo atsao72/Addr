@@ -1,7 +1,7 @@
 <resources>
     <string name="app_name">Addr</string>
     <string name="app_id">409C3285-98EA-501D-FF93-492FAA908A00</string>
-    <string name="secret_key">307DF5D2-0230-F284-FFA9-A6C9DCF8D600</string>
+    <string name="secret_key">FE4E0AC0-2D3C-3BC9-FF97-EBD6AB771A00</string>
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>
     <string name="action_settings">Settings</string>
