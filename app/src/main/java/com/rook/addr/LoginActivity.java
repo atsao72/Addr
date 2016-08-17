@@ -2,13 +2,11 @@ package com.rook.addr;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.annotation.IntegerRes;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import com.backendless.Backendless;
@@ -43,9 +41,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
     @Override
     public void onClick(View v) {
         loginUser();
-
     }
-
 
     final AsyncCallback<BackendlessUser> loginCallback = new AsyncCallback<BackendlessUser>() {
         @Override

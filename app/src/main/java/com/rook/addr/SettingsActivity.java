@@ -1,6 +1,5 @@
 package com.rook.addr;
 
-import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -8,10 +7,7 @@ import android.support.design.widget.NavigationView;
 import android.support.design.widget.Snackbar;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
-import android.support.v7.app.ActionBarDrawerToggle;
-import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
@@ -23,27 +19,20 @@ import com.backendless.BackendlessUser;
 import com.facebook.CallbackManager;
 import com.facebook.FacebookCallback;
 import com.facebook.FacebookException;
-import com.facebook.FacebookSdk;
 import com.facebook.login.LoginResult;
-import com.facebook.login.widget.LoginButton;
 
 /**
  * Created by Austin on 8/12/2016.
  */
 public class SettingsActivity extends BaseClass
-        implements NavigationView.OnNavigationItemSelectedListener, AdapterView.OnItemClickListener{
+        implements NavigationView.OnNavigationItemSelectedListener, AdapterView.OnItemClickListener {
     private CallbackManager callbackManager;
+
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-//        setContentView(R.layout.content_settings);
         FrameLayout frameLayout = (FrameLayout) findViewById(R.id.content_frame);
         getLayoutInflater().inflate(R.layout.app_bar_settings, frameLayout);
-//        FrameLayout frameLayout = (FrameLayout) findViewById(R.id.content_frame);
-//        LayoutInflater inflater = (LayoutInflater) this.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-//        View contentView = getLayoutInflater().inflate(R.layout.content_settings, frameLayout);
-//        MainActivity.drawer.addView(contentView, 0);
-
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -54,8 +43,9 @@ public class SettingsActivity extends BaseClass
             @Override
             public void onSuccess(LoginResult loginResult) {
                 final BackendlessUser user = Backendless.UserService.CurrentUser();
-                if(user != null){
+                if (user != null) {
                     user.setProperty("fb_access_token", loginResult.getAccessToken().getToken());
+                    user.setProperty("fb_user_id", loginResult.getAccessToken().getUserId());
                     new Thread(new Runnable() {
                         @Override
                         public void run() {
@@ -78,21 +68,9 @@ public class SettingsActivity extends BaseClass
             }
         };
 
-//        ListView listView = (ListView) contentView.findViewById(R.id.accountsListView);
         ListView listView = (ListView) findViewById(R.id.accountsListView);
         listView.setOnItemClickListener(this);
         listView.setAdapter(new AccountListAdapter(this, callbackManager, facebookCallback, new String[]{"Facebook", "Instagram", "Twitter"}));
-
-//        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
-//        ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
-//                this, drawer, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
-//        drawer.addDrawerListener(toggle);
-//        toggle.syncState();
-
-//        NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
-//        navigationView.setNavigationItemSelectedListener(this);
-
-
     }
 
     @Override
@@ -108,6 +86,10 @@ public class SettingsActivity extends BaseClass
         int id = item.getItemId();
 
         if (id == R.id.nav_camera) {
+            Intent intent = new Intent(this, SettingsActivity.class);
+            startActivity(intent);
+            finish();
+            drawer.closeDrawers();
             // Handle the camera action
         } else if (id == R.id.nav_gallery) {
 
@@ -126,7 +108,7 @@ public class SettingsActivity extends BaseClass
 
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-        switch(position){
+        switch (position) {
             case 0: //Facebook
 
             case 1: //Instagram
