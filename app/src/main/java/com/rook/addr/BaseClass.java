@@ -12,9 +12,12 @@ import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.backendless.Backendless;
 import com.backendless.BackendlessUser;
+import com.backendless.async.callback.AsyncCallback;
+import com.backendless.exceptions.BackendlessFault;
 
 /**
  * Created by Austin on 8/13/2016.
@@ -31,10 +34,6 @@ public class BaseClass extends AppCompatActivity implements NavigationView.OnNav
         setContentView(R.layout.drawer_layout);
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-//        if(isFirst){
-//            setSupportActionBar(toolbar);
-//            isFirst = false;
-//        }
 
         drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         toggle = new ActionBarDrawerToggle(
@@ -69,7 +68,8 @@ public class BaseClass extends AppCompatActivity implements NavigationView.OnNav
         int id = item.getItemId();
 
         if (id == R.id.nav_camera) {
-            // Handle the camera action
+            finish();
+            drawer.closeDrawers();
         } else if (id == R.id.nav_gallery) {
 
         } else if (id == R.id.nav_slideshow) {
@@ -77,10 +77,24 @@ public class BaseClass extends AppCompatActivity implements NavigationView.OnNav
         } else if (id == R.id.nav_settings) {
             Intent intent = new Intent(this, SettingsActivity.class);
             startActivity(intent);
-            finish();
             drawer.closeDrawers();
-        } else if (id == R.id.nav_send) {
+        } else if (id == R.id.nav_logout) {
+            Backendless.UserService.logout(new AsyncCallback<Void>() {
+                @Override
+                public void handleResponse(Void response) {
+                    Intent intent = new Intent(getApplicationContext(), LoginActivity.class);
+                    startActivity(intent);
+                    finish();
+                    drawer.closeDrawers();
+                }
 
+                @Override
+                public void handleFault(BackendlessFault fault) {
+                    System.out.println("Error logging out: " + fault.getMessage());
+                    Toast toast = Toast.makeText(getApplicationContext(), "Logout failed", Toast.LENGTH_SHORT);
+                    toast.show();
+                }
+            });
         }
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);

@@ -7,12 +7,8 @@ import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.TextView;
 
-import com.backendless.Backendless;
-import com.backendless.BackendlessUser;
 import com.facebook.CallbackManager;
 import com.facebook.FacebookCallback;
-import com.facebook.FacebookException;
-import com.facebook.FacebookSdk;
 import com.facebook.login.LoginResult;
 import com.facebook.login.widget.LoginButton;
 
@@ -27,7 +23,7 @@ public class AccountListAdapter extends BaseAdapter {
     private final FacebookCallback<LoginResult> facebookCallback;
 
     public AccountListAdapter(Context context, CallbackManager callbackManager,
-                              FacebookCallback<LoginResult> fbCallback, String[] data){
+                              FacebookCallback<LoginResult> fbCallback, String[] data) {
         this.context = context;
         this.data = data;
         inflater = (LayoutInflater) context

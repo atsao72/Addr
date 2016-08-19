@@ -13,6 +13,8 @@ import com.backendless.Backendless;
 import com.backendless.BackendlessUser;
 import com.backendless.async.callback.AsyncCallback;
 import com.backendless.exceptions.BackendlessFault;
+import com.backendless.persistence.local.UserIdStorageFactory;
+import com.backendless.persistence.local.UserTokenStorageFactory;
 import com.facebook.FacebookSdk;
 import com.facebook.appevents.AppEventsLogger;
 
@@ -23,6 +25,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
     private EditText emailText;
     private EditText passwordText;
 
+
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -31,6 +34,48 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         AppEventsLogger.activateApp(getApplication());
         Backendless.initApp(getBaseContext(), getString(R.string.app_id), getString(R.string.secret_key), BuildConfig.VERSION_NAME);
 
+        String userToken = UserTokenStorageFactory.instance().getStorage().get();
+
+        if (userToken != null && !userToken.equals("")) {
+            Backendless.UserService.isValidLogin(new AsyncCallback<Boolean>() {
+                @Override
+                public void handleResponse(Boolean response) {
+                    if (response) {
+                        String currentUserObjectId = UserIdStorageFactory.instance().getStorage().get();
+                        Backendless.Data.of(BackendlessUser.class).findById(currentUserObjectId, new AsyncCallback<BackendlessUser>() {
+                            @Override
+                            public void handleResponse(BackendlessUser response) {
+                                Backendless.UserService.setCurrentUser(response);
+                                Intent intent = new Intent(getApplicationContext(), MainActivity.class);
+                                startActivity(intent);
+                                finish();
+                            }
+
+                            @Override
+                            public void handleFault(BackendlessFault fault) {
+                                Toast toast = Toast.makeText(getApplicationContext(), "Session timed out. Please login again", Toast.LENGTH_SHORT);
+                                toast.show();
+                                updateUi();
+                            }
+                        });
+                    } else {
+                        Toast toast = Toast.makeText(getApplicationContext(), "Session timed out. Please login again", Toast.LENGTH_SHORT);
+                        toast.show();
+                        updateUi();
+                    }
+                }
+
+                @Override
+                public void handleFault(BackendlessFault fault) {
+                    updateUi();
+                }
+            });
+        } else {
+            updateUi();
+        }
+    }
+
+    private void updateUi() {
         setContentView(R.layout.login_layout);
         emailText = (EditText) findViewById(R.id.emailText);
         passwordText = (EditText) findViewById(R.id.passwordText);
@@ -40,27 +85,26 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
 
     @Override
     public void onClick(View v) {
-        loginUser();
+        loginUser(emailText.getText().toString(), passwordText.getText().toString());
     }
 
-    final AsyncCallback<BackendlessUser> loginCallback = new AsyncCallback<BackendlessUser>() {
-        @Override
-        public void handleResponse(BackendlessUser registeredUser) {
-            System.out.println("User has been logged in - " + registeredUser.getObjectId());
-            Intent intent = new Intent(getApplicationContext(), MainActivity.class);
-            startActivity(intent);
-        }
+    public void loginUser(String email, String password) {
+        Backendless.UserService.login(email, password, new AsyncCallback<BackendlessUser>() {
+            @Override
+            public void handleResponse(BackendlessUser response) {
+                System.out.println("User has been logged in - " + response.getObjectId());
+                Intent intent = new Intent(getApplicationContext(), MainActivity.class);
+                startActivity(intent);
+                finish();
+            }
 
-        @Override
-        public void handleFault(BackendlessFault backendlessFault) {
-            System.out.println("Server reported an error - " + backendlessFault.getMessage());
-            Toast toast = Toast.makeText(getApplicationContext(), "Login failed", Toast.LENGTH_SHORT);
-            toast.show();
-        }
-    };
-
-    public void loginUser() {
-        Backendless.UserService.login(emailText.getText().toString(), passwordText.getText().toString(), loginCallback);
+            @Override
+            public void handleFault(BackendlessFault fault) {
+                System.out.println("Server reported an error - " + fault.getMessage());
+                Toast toast = Toast.makeText(getApplicationContext(), "Login failed", Toast.LENGTH_SHORT);
+                toast.show();
+            }
+        }, true);
     }
 
     public void registerUser() {
@@ -74,14 +118,14 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
             @Override
             public void handleResponse(BackendlessUser registeredUser) {
                 System.out.println("User has been registered - " + registeredUser.getObjectId());
-                Backendless.UserService.login(registeredUser.getEmail(), registeredUser.getPassword(), loginCallback);
+                Backendless.UserService.login(registeredUser.getEmail(), registeredUser.getPassword());
             }
 
             @Override
             public void handleFault(BackendlessFault backendlessFault) {
                 System.out.println("Server reported an error - " + backendlessFault.getMessage());
                 if (backendlessFault.getMessage().contains("User already exists")) {
-                    loginUser();
+                    loginUser(emailText.getText().toString(), passwordText.getText().toString());
                 }
             }
         };
