@@ -5,13 +5,11 @@ import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.Color;
-import android.net.Uri;
 import android.os.Bundle;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.widget.Toolbar;
-import android.text.Html;
 import android.view.View;
 import android.widget.Button;
 import android.widget.FrameLayout;
@@ -30,6 +28,8 @@ import com.google.zxing.qrcode.QRCodeWriter;
 
 import org.json.JSONException;
 import org.json.JSONObject;
+
+import java.util.ArrayList;
 
 public class MainActivity extends BaseClass
         implements NavigationView.OnNavigationItemSelectedListener, View.OnClickListener {
@@ -121,41 +121,33 @@ public class MainActivity extends BaseClass
                                     try {
                                         final String name = object.getString("name");
                                         final String id = object.getString("id");
-                                        runOnUiThread(new Runnable() {
-                                            String str = "You just met " + name + " on Facebook! Visit their profile!";
-                                            String link = "https://www.facebook.com/" + id;
-                                            String htmlText = "<a href=\"" + link + "\">" + str + "</a>";
+//                                        runOnUiThread(new Runnable() {
+                                        String str = "You just met " + name + " on Facebook! Visit their profile!";
+                                        String fbLink = "https://www.facebook.com/" + id;
+                                        PackageManager pm = getApplicationContext().getPackageManager();
 
-                                            @Override
-                                            public void run() {
-                                                editText.setText(Html.fromHtml(htmlText));
-                                                editText.setClickable(true);
-                                                editText.setOnClickListener(new View.OnClickListener() {
-                                                    @Override
-                                                    public void onClick(View v) {
-                                                        PackageManager pm = getApplicationContext().getPackageManager();
-                                                        Uri uri = Uri.parse(link);
-                                                        try {
-                                                            ApplicationInfo applicationInfo = pm.getApplicationInfo("com.facebook.katana", 0);
-                                                            if (applicationInfo.enabled) {
-                                                                uri = Uri.parse("fb://facewebmodal/f?href=" + link);
-                                                            }
-                                                        } catch (PackageManager.NameNotFoundException e) {
-                                                            System.out.println("package not found");
-                                                        }
-                                                        Intent intent = new Intent(Intent.ACTION_VIEW, uri);
-                                                        startActivity(intent);
-                                                    }
-                                                });
+                                        try {
+                                            ApplicationInfo applicationInfo = pm.getApplicationInfo("com.facebook.katana", 0);
+                                            if (applicationInfo.enabled) {
+                                                fbLink = "fb://facewebmodal/f?href=" + fbLink;
                                             }
-                                        });
+                                        } catch (PackageManager.NameNotFoundException e) {
+                                            System.out.println("package not found");
+                                        }
+                                        Intent intent = new Intent(getApplicationContext(), MetFriendActivity.class);
+                                        Bundle bundle = new Bundle();
+                                        bundle.putString("name", name);
+                                        ArrayList<String> links = new ArrayList<String>();
+                                        links.add(fbLink);
+                                        bundle.putStringArrayList("links", links);
+                                        intent.putExtras(bundle);
+                                        startActivity(intent);
                                     } catch (JSONException e) {
                                         e.printStackTrace();
                                     }
                                 }
                             }
                     ).executeAsync();
-
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
