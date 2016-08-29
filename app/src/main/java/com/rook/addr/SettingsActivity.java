@@ -67,8 +67,21 @@ public class SettingsActivity extends BaseClass
 
         ListView listView = (ListView) findViewById(R.id.accountsListView);
         listView.setOnItemClickListener(this);
-        listView.setAdapter(new AccountListAdapter(this, callbackManager, facebookCallback, new String[]{"Facebook", "Instagram", "Twitter"}));
+        listView.setAdapter(new AccountListAdapter(this, callbackManager, facebookCallback, new String[]{"Facebook", "Instagram"}));
     }
+//
+//    private void signInWithInstagram() {
+//        final Uri.Builder uriBuilder = new Uri.Builder();
+//        uriBuilder.scheme("https")
+//                .authority("api.instagram.com")
+//                .appendPath("oauth")
+//                .appendPath("authorize")
+//                .appendQueryParameter("client_id", getString(R.string.instagram_client_id))
+//                .appendQueryParameter("redirect_uri", "http://redirect")
+//                .appendQueryParameter("response_type", "token");
+//        final Intent browser = new Intent(Intent.ACTION_VIEW, uriBuilder.build());
+//        startActivity(browser);
+//    }
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {

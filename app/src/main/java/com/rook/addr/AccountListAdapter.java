@@ -1,11 +1,13 @@
 package com.rook.addr;
 
 import android.content.Context;
+import android.content.Intent;
+import android.net.Uri;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
-import android.widget.TextView;
+import android.widget.Button;
 
 import com.facebook.CallbackManager;
 import com.facebook.FacebookCallback;
@@ -49,15 +51,53 @@ public class AccountListAdapter extends BaseAdapter {
     }
 
     @Override
+    public int getViewTypeCount() {
+        return 2;
+    }
+
+    @Override
+    public int getItemViewType(int position) {
+        return position;
+    }
+
+    @Override
     public View getView(int position, View convertView, ViewGroup parent) {
         View vi = convertView;
-        if (vi == null)
-            vi = inflater.inflate(R.layout.account_list_item, null);
-        TextView text = (TextView) vi.findViewById(R.id.text);
-        text.setText(data[position]);
-        LoginButton loginButton = (LoginButton) vi.findViewById(R.id.login_button);
-        loginButton.setReadPermissions("email");
-        loginButton.registerCallback(callbackManager, facebookCallback);
+        int type = getItemViewType(position);
+        if (vi == null) {
+// Inflate the layout according to the view type
+            if (type == 0) {
+// Inflate the layout with image
+                vi = inflater.inflate(R.layout.facebook_list_item, null);
+                LoginButton loginButton = (LoginButton) vi.findViewById(R.id.fb_login_button);
+                loginButton.setReadPermissions("email");
+                loginButton.registerCallback(callbackManager, facebookCallback);
+            } else if (type == 1) {
+                vi = inflater.inflate(R.layout.instagram_list_item, null);
+                Button igLogin = (Button) vi.findViewById(R.id.ig_login_button);
+                igLogin.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        signInWithInstagram();
+                    }
+                });
+            }
+        }
         return vi;
     }
+
+
+    private void signInWithInstagram() {
+        final Uri.Builder uriBuilder = new Uri.Builder();
+        uriBuilder.scheme("https")
+                .authority("api.instagram.com")
+                .appendPath("oauth")
+                .appendPath("authorize")
+                .appendQueryParameter("client_id", context.getString(R.string.instagram_client_id))
+                .appendQueryParameter("redirect_uri", "http://redirect")
+                .appendQueryParameter("response_type", "token");
+        final Intent browser = new Intent(Intent.ACTION_VIEW, uriBuilder.build());
+        context.startActivity(browser);
+    }
+
 }

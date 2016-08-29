@@ -14,9 +14,9 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
-import android.widget.TextView;
 
 import com.backendless.Backendless;
+import com.backendless.BackendlessUser;
 import com.facebook.AccessToken;
 import com.facebook.GraphRequest;
 import com.facebook.GraphResponse;
@@ -35,7 +35,6 @@ public class MainActivity extends BaseClass
         implements NavigationView.OnNavigationItemSelectedListener, View.OnClickListener {
 
     private Button cameraButton;
-    private TextView editText;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -45,7 +44,6 @@ public class MainActivity extends BaseClass
         getLayoutInflater().inflate(R.layout.app_bar_main, frameLayout);
         cameraButton = (Button) findViewById(R.id.camera_image);
         cameraButton.setOnClickListener(this);
-        editText = (TextView) findViewById(R.id.editText);
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -73,8 +71,11 @@ public class MainActivity extends BaseClass
 
         QRCodeWriter writer = new QRCodeWriter();
         JSONObject jsonObject = new JSONObject();
-        String userId = Backendless.UserService.CurrentUser().getProperty("fb_user_id").toString();
+        BackendlessUser currentUser = Backendless.UserService.CurrentUser();
+        String userId = currentUser.getProperty("fb_user_id").toString();
+        String name = currentUser.getProperty("name").toString();
         jsonObject.put("fb_user_id", userId);
+        jsonObject.put("name", name);
         result = writer.encode(jsonObject.toString(),
                 BarcodeFormat.QR_CODE, WIDTH, WIDTH);
 
@@ -113,16 +114,14 @@ public class MainActivity extends BaseClass
                 try {
                     JSONObject jsonObject = new JSONObject(contents);
                     String userIdStr = "/" + jsonObject.getString("fb_user_id");
+                    final String name = jsonObject.getString("name");
                 /* make the API call */
                     new GraphRequest(AccessToken.getCurrentAccessToken(), userIdStr, null, HttpMethod.GET,
                             new GraphRequest.Callback() {
                                 public void onCompleted(final GraphResponse response) {
                                     JSONObject object = response.getJSONObject();
                                     try {
-                                        final String name = object.getString("name");
                                         final String id = object.getString("id");
-//                                        runOnUiThread(new Runnable() {
-                                        String str = "You just met " + name + " on Facebook! Visit their profile!";
                                         String fbLink = "https://www.facebook.com/" + id;
                                         PackageManager pm = getApplicationContext().getPackageManager();
 
