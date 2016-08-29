@@ -4,10 +4,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.NavigationView;
-import android.support.design.widget.Snackbar;
 import android.support.v7.widget.Toolbar;
-import android.view.View;
-import android.widget.AdapterView;
 import android.widget.FrameLayout;
 import android.widget.ListView;
 
@@ -22,7 +19,7 @@ import com.facebook.login.LoginResult;
  * Created by Austin on 8/12/2016.
  */
 public class SettingsActivity extends BaseClass
-        implements NavigationView.OnNavigationItemSelectedListener, AdapterView.OnItemClickListener {
+        implements NavigationView.OnNavigationItemSelectedListener {
     private CallbackManager callbackManager;
 
     @Override
@@ -66,42 +63,12 @@ public class SettingsActivity extends BaseClass
         };
 
         ListView listView = (ListView) findViewById(R.id.accountsListView);
-        listView.setOnItemClickListener(this);
         listView.setAdapter(new AccountListAdapter(this, callbackManager, facebookCallback, new String[]{"Facebook", "Instagram"}));
     }
-//
-//    private void signInWithInstagram() {
-//        final Uri.Builder uriBuilder = new Uri.Builder();
-//        uriBuilder.scheme("https")
-//                .authority("api.instagram.com")
-//                .appendPath("oauth")
-//                .appendPath("authorize")
-//                .appendQueryParameter("client_id", getString(R.string.instagram_client_id))
-//                .appendQueryParameter("redirect_uri", "http://redirect")
-//                .appendQueryParameter("response_type", "token");
-//        final Intent browser = new Intent(Intent.ACTION_VIEW, uriBuilder.build());
-//        startActivity(browser);
-//    }
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         callbackManager.onActivityResult(requestCode, resultCode, data);
-    }
-
-    @Override
-    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-        switch (position) {
-            case 0: //Facebook
-
-            case 1: //Instagram
-                Snackbar.make(view, "Add Instagram Account", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
-                break;
-            case 2: //Twitter
-                Snackbar.make(view, "Add Twitter Account", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
-                break;
-        }
     }
 }

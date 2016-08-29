@@ -24,7 +24,8 @@ import com.facebook.appevents.AppEventsLogger;
 public class LoginActivity extends AppCompatActivity implements View.OnClickListener {
     private EditText emailText;
     private EditText passwordText;
-
+    private Button loginButton;
+    private Button registerButton;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -79,13 +80,21 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         setContentView(R.layout.login_layout);
         emailText = (EditText) findViewById(R.id.emailText);
         passwordText = (EditText) findViewById(R.id.passwordText);
-        Button loginButton = (Button) findViewById(R.id.loginButton);
+        loginButton = (Button) findViewById(R.id.loginButton);
         loginButton.setOnClickListener(this);
+        registerButton = (Button) findViewById(R.id.registerButton);
+        registerButton.setOnClickListener(this);
     }
 
     @Override
     public void onClick(View v) {
-        loginUser(emailText.getText().toString(), passwordText.getText().toString());
+        if (v == loginButton) {
+            loginUser(emailText.getText().toString(), passwordText.getText().toString());
+        } else if (v == registerButton) {
+            Intent intent = new Intent(getApplicationContext(), RegisterActivity.class);
+            startActivity(intent);
+            finish();
+        }
     }
 
     public void loginUser(String email, String password) {
@@ -106,31 +115,4 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
             }
         }, true);
     }
-
-    public void registerUser() {
-        BackendlessUser user = new BackendlessUser();
-        user.setEmail("test@gmail.com");
-        user.setPassword("pass1");
-        user.setProperty("name", "Tester1");
-
-
-        AsyncCallback<BackendlessUser> callback = new AsyncCallback<BackendlessUser>() {
-            @Override
-            public void handleResponse(BackendlessUser registeredUser) {
-                System.out.println("User has been registered - " + registeredUser.getObjectId());
-                Backendless.UserService.login(registeredUser.getEmail(), registeredUser.getPassword());
-            }
-
-            @Override
-            public void handleFault(BackendlessFault backendlessFault) {
-                System.out.println("Server reported an error - " + backendlessFault.getMessage());
-                if (backendlessFault.getMessage().contains("User already exists")) {
-                    loginUser(emailText.getText().toString(), passwordText.getText().toString());
-                }
-            }
-        };
-
-        Backendless.UserService.register(user, callback);
-    }
-
 }
