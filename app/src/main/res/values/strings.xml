@@ -8,6 +8,8 @@
     <string name="facebook_app_id">1793640344216276</string>
     <string name="instagram_client_id">7183197a001c4f658ca34142b8aec08e</string>
     <string name="instagram_client_secret">a4c3c87e8a9f45949a801cc3c8e76dcd</string>
+    <string name="twitter_key">Tfjl4KvnLdNhTGNJwWmlxTOdt</string>
+    <string name="twitter_secret">9G6r8gpCFZMXCuiEB4mk3aYH4Bj0iC3KpuIBxLYxqnZx5AXkuT</string>
     <string-array name="accountsList">
         <item>Add Facebook Account</item>
         <item>Add Instagram Account</item>
