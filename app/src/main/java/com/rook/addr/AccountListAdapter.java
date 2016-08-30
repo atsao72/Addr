@@ -13,6 +13,8 @@ import com.facebook.CallbackManager;
 import com.facebook.FacebookCallback;
 import com.facebook.login.LoginResult;
 import com.facebook.login.widget.LoginButton;
+import com.twitter.sdk.android.core.Callback;
+import com.twitter.sdk.android.core.TwitterSession;
 
 /**
  * Created by Austin on 8/12/2016.
@@ -23,9 +25,13 @@ public class AccountListAdapter extends BaseAdapter {
     private static LayoutInflater inflater = null;
     private final CallbackManager callbackManager;
     private final FacebookCallback<LoginResult> facebookCallback;
+    private final Callback<TwitterSession> twitterCallback;
+    public static CustomTwitterLoginButton loginButton;
+    public static Button twitterLogout;
 
     public AccountListAdapter(Context context, CallbackManager callbackManager,
-                              FacebookCallback<LoginResult> fbCallback, String[] data) {
+                              FacebookCallback<LoginResult> fbCallback, Callback<TwitterSession> twitterCallback,
+                              String[] data) {
         this.context = context;
         this.data = data;
         inflater = (LayoutInflater) context
@@ -33,6 +39,7 @@ public class AccountListAdapter extends BaseAdapter {
 
         this.callbackManager = callbackManager;
         this.facebookCallback = fbCallback;
+        this.twitterCallback = twitterCallback;
     }
 
     @Override
@@ -52,7 +59,7 @@ public class AccountListAdapter extends BaseAdapter {
 
     @Override
     public int getViewTypeCount() {
-        return 2;
+        return 3;
     }
 
     @Override
@@ -65,9 +72,7 @@ public class AccountListAdapter extends BaseAdapter {
         View vi = convertView;
         int type = getItemViewType(position);
         if (vi == null) {
-// Inflate the layout according to the view type
             if (type == 0) {
-// Inflate the layout with image
                 vi = inflater.inflate(R.layout.facebook_list_item, null);
                 LoginButton loginButton = (LoginButton) vi.findViewById(R.id.fb_login_button);
                 loginButton.setReadPermissions("email");
@@ -81,11 +86,48 @@ public class AccountListAdapter extends BaseAdapter {
                         signInWithInstagram();
                     }
                 });
+            } else if (type == 2) {
+                vi = inflater.inflate(R.layout.twitter_list_item, null);
+
+                loginButton = (CustomTwitterLoginButton) vi.findViewById(R.id.twitter_login_button);
+//                twitterLogout = (Button) vi.findViewById(R.id.twitter_logout_button);
+                loginButton.setCallback(twitterCallback);
+//                loginButton.setVisibility(View.GONE);
+//                twitterLogout.setVisibility(View.VISIBLE);
+//                loginButton.setCallback(new Callback<TwitterSession>() {
+//                    @Override
+//                    public void success(Result<TwitterSession> result) {
+//                        final BackendlessUser user = Backendless.UserService.CurrentUser();
+//                        // The TwitterSession is also available through:
+//                        // Twitter.getInstance().core.getSessionManager().getActiveSession()
+//                        TwitterSession session = result.data;
+//                        user.setProperty("twitter_user_id", Long.toString(session.getUserId()));
+//                        new Thread(new Runnable() {
+//                            @Override
+//                            public void run() {
+//                                Backendless.UserService.update(user);
+//                            }
+//                        }).start();
+//
+//                        String msg = "Logged in as " + "@" + session.getUserName();
+//                        Toast.makeText(context, msg, Toast.LENGTH_LONG).show();
+//                    }
+//
+//                    @Override
+//                    public void failure(TwitterException exception) {
+//                        Toast.makeText(context, "Log in failed", Toast.LENGTH_LONG).show();
+//                        Log.d("TwitterKit", "Login with Twitter failure", exception);
+//                    }
+//                });
             }
         }
         return vi;
     }
 
+    private void updateTwitterButtons() {
+        twitterLogout.setVisibility(View.VISIBLE);
+        loginButton.setVisibility(View.GONE);
+    }
 
     private void signInWithInstagram() {
         final Uri.Builder uriBuilder = new Uri.Builder();
