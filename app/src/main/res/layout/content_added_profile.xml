@@ -27,7 +27,8 @@
         android:layout_height="wrap_content"
         android:layout_below="@+id/introTextView"
         android:layout_margin="10dp"
-        android:text="Phone Number: " />
+        android:text="Phone Number: "
+        android:textAppearance="?android:attr/textAppearanceMedium" />
 
     <ListView
         android:id="@+id/accountsListView"

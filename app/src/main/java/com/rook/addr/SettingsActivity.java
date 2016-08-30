@@ -53,7 +53,6 @@ public class SettingsActivity extends BaseClass
             public void onSuccess(LoginResult loginResult) {
                 final BackendlessUser user = Backendless.UserService.CurrentUser();
                 if (user != null) {
-//                    user.setProperty("fb_access_token", loginResult.getAccessToken().getToken());
                     user.setProperty("fb_user_id", loginResult.getAccessToken().getUserId());
                     new Thread(new Runnable() {
                         @Override

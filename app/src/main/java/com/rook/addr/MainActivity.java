@@ -53,7 +53,6 @@ public class MainActivity extends BaseClass
     @Override
     protected void onStart() {
         super.onStart();
-//        if (Backendless.UserService.CurrentUser().getProperty("fb_user_id") != null) {
         try {
             Bitmap bitmap = generateQRCodeBitmap();
             final ImageView qrImage = (ImageView) findViewById(R.id.qrImage);
@@ -63,7 +62,6 @@ public class MainActivity extends BaseClass
         } catch (JSONException e1) {
             e1.printStackTrace();
         }
-//        }
     }
 
     private Bitmap generateQRCodeBitmap() throws WriterException, JSONException {
@@ -146,7 +144,7 @@ public class MainActivity extends BaseClass
                                         }
                                         String twitterLink = "twitter.com";
                                         try {
-                                            ApplicationInfo applicationInfo = pm.getApplicationInfo("com.twitter.android", 0);
+                                            pm.getApplicationInfo("com.twitter.android", 0);
                                             twitterLink = "twitter://user?user_id=" + twitterUserId;
                                         } catch (PackageManager.NameNotFoundException e) {
                                             Log.d("Package Manager error", "package not found", e);
