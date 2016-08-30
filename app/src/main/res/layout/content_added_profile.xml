@@ -21,10 +21,18 @@
         android:text="You just met "
         android:textAppearance="?android:attr/textAppearanceLarge" />
 
+    <TextView
+        android:id="@+id/phoneTextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/introTextView"
+        android:layout_margin="10dp"
+        android:text="Phone Number: " />
+
     <ListView
         android:id="@+id/accountsListView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/introTextView"
+        android:layout_below="@+id/phoneTextView"
         android:layout_centerHorizontal="true" />
 </RelativeLayout>

@@ -27,7 +27,6 @@ public class AccountListAdapter extends BaseAdapter {
     private final FacebookCallback<LoginResult> facebookCallback;
     private final Callback<TwitterSession> twitterCallback;
     public static CustomTwitterLoginButton loginButton;
-    public static Button twitterLogout;
 
     public AccountListAdapter(Context context, CallbackManager callbackManager,
                               FacebookCallback<LoginResult> fbCallback, Callback<TwitterSession> twitterCallback,
@@ -88,45 +87,11 @@ public class AccountListAdapter extends BaseAdapter {
                 });
             } else if (type == 2) {
                 vi = inflater.inflate(R.layout.twitter_list_item, null);
-
                 loginButton = (CustomTwitterLoginButton) vi.findViewById(R.id.twitter_login_button);
-//                twitterLogout = (Button) vi.findViewById(R.id.twitter_logout_button);
                 loginButton.setCallback(twitterCallback);
-//                loginButton.setVisibility(View.GONE);
-//                twitterLogout.setVisibility(View.VISIBLE);
-//                loginButton.setCallback(new Callback<TwitterSession>() {
-//                    @Override
-//                    public void success(Result<TwitterSession> result) {
-//                        final BackendlessUser user = Backendless.UserService.CurrentUser();
-//                        // The TwitterSession is also available through:
-//                        // Twitter.getInstance().core.getSessionManager().getActiveSession()
-//                        TwitterSession session = result.data;
-//                        user.setProperty("twitter_user_id", Long.toString(session.getUserId()));
-//                        new Thread(new Runnable() {
-//                            @Override
-//                            public void run() {
-//                                Backendless.UserService.update(user);
-//                            }
-//                        }).start();
-//
-//                        String msg = "Logged in as " + "@" + session.getUserName();
-//                        Toast.makeText(context, msg, Toast.LENGTH_LONG).show();
-//                    }
-//
-//                    @Override
-//                    public void failure(TwitterException exception) {
-//                        Toast.makeText(context, "Log in failed", Toast.LENGTH_LONG).show();
-//                        Log.d("TwitterKit", "Login with Twitter failure", exception);
-//                    }
-//                });
             }
         }
         return vi;
-    }
-
-    private void updateTwitterButtons() {
-        twitterLogout.setVisibility(View.VISIBLE);
-        loginButton.setVisibility(View.GONE);
     }
 
     private void signInWithInstagram() {

@@ -50,6 +50,10 @@ public class ProfileListAdapter extends BaseAdapter {
         text.setText(accountNames[position]);
         final Uri link = data[position];
         Button visitButton = (Button) vi.findViewById(R.id.visit_account_button);
+        if (link == null) {
+            visitButton.setClickable(false);
+            return vi;
+        }
         visitButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {

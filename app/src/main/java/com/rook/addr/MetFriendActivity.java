@@ -15,8 +15,11 @@ import java.util.ArrayList;
  */
 public class MetFriendActivity extends BaseClass {
     private String name;
+    private String phoneNumber;
     private Uri fbLink;
+    private Uri twitterLink;
     private TextView nameTv;
+    private TextView phoneTv;
     private ListView accountsLv;
 
     @Override
@@ -30,19 +33,26 @@ public class MetFriendActivity extends BaseClass {
 
         Bundle bundle = getIntent().getExtras();
         name = bundle.getString("name");
+        phoneNumber = bundle.getString("phone_num");
         ArrayList<String> links = bundle.getStringArrayList("links");
         fbLink = Uri.parse(links.get(0));
-
+        twitterLink = Uri.parse(links.get(1));
         nameTv = (TextView) findViewById(R.id.introTextView);
+        phoneTv = (TextView) findViewById(R.id.phoneTextView);
         accountsLv = (ListView) findViewById(R.id.accountsListView);
         updateUi();
     }
 
     private void updateUi() {
         nameTv.setText(name);
+        String newText = phoneTv.getText().toString() + phoneNumber;
+        phoneTv.setText(newText);
         Uri[] accountLinks = new Uri[3];
         if (fbLink != null && !fbLink.toString().isEmpty()) {
             accountLinks[0] = fbLink;
+        }
+        if (twitterLink != null && !twitterLink.toString().isEmpty()) {
+            accountLinks[2] = twitterLink;
         }
         accountsLv.setAdapter(new ProfileListAdapter(this, accountLinks));
 

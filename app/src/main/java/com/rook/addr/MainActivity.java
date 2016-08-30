@@ -10,6 +10,7 @@ import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.FrameLayout;
@@ -52,17 +53,17 @@ public class MainActivity extends BaseClass
     @Override
     protected void onStart() {
         super.onStart();
-        if (Backendless.UserService.CurrentUser().getProperty("fb_user_id") != null) {
-            try {
-                Bitmap bitmap = generateQRCodeBitmap();
-                final ImageView qrImage = (ImageView) findViewById(R.id.qrImage);
-                qrImage.setImageBitmap(bitmap);
-            } catch (WriterException e1) {
-                e1.printStackTrace();
-            } catch (JSONException e1) {
-                e1.printStackTrace();
-            }
+//        if (Backendless.UserService.CurrentUser().getProperty("fb_user_id") != null) {
+        try {
+            Bitmap bitmap = generateQRCodeBitmap();
+            final ImageView qrImage = (ImageView) findViewById(R.id.qrImage);
+            qrImage.setImageBitmap(bitmap);
+        } catch (WriterException e1) {
+            e1.printStackTrace();
+        } catch (JSONException e1) {
+            e1.printStackTrace();
         }
+//        }
     }
 
     private Bitmap generateQRCodeBitmap() throws WriterException, JSONException {
@@ -72,9 +73,17 @@ public class MainActivity extends BaseClass
         QRCodeWriter writer = new QRCodeWriter();
         JSONObject jsonObject = new JSONObject();
         BackendlessUser currentUser = Backendless.UserService.CurrentUser();
-        String userId = currentUser.getProperty("fb_user_id").toString();
+        if (currentUser.getProperty("fb_user_id") != null) {
+            String fbUserId = currentUser.getProperty("fb_user_id").toString();
+            jsonObject.put("fb_user_id", fbUserId);
+        }
+        if (currentUser.getProperty("twitter_user_id") != null) {
+            String twitterUserId = currentUser.getProperty("twitter_user_id").toString();
+            jsonObject.put("twitter_user_id", twitterUserId);
+        }
+        String phoneNumber = currentUser.getProperty("phone").toString();
         String name = currentUser.getProperty("name").toString();
-        jsonObject.put("fb_user_id", userId);
+        jsonObject.put("phone_num", phoneNumber);
         jsonObject.put("name", name);
         result = writer.encode(jsonObject.toString(),
                 BarcodeFormat.QR_CODE, WIDTH, WIDTH);
@@ -115,6 +124,8 @@ public class MainActivity extends BaseClass
                     JSONObject jsonObject = new JSONObject(contents);
                     String userIdStr = "/" + jsonObject.getString("fb_user_id");
                     final String name = jsonObject.getString("name");
+                    final String phoneNum = jsonObject.getString("phone_num");
+                    final String twitterUserId = jsonObject.getString("twitter_user_id");
                 /* make the API call */
                     new GraphRequest(AccessToken.getCurrentAccessToken(), userIdStr, null, HttpMethod.GET,
                             new GraphRequest.Callback() {
@@ -133,11 +144,20 @@ public class MainActivity extends BaseClass
                                         } catch (PackageManager.NameNotFoundException e) {
                                             System.out.println("package not found");
                                         }
+                                        String twitterLink = "twitter.com";
+                                        try {
+                                            ApplicationInfo applicationInfo = pm.getApplicationInfo("com.twitter.android", 0);
+                                            twitterLink = "twitter://user?user_id=" + twitterUserId;
+                                        } catch (PackageManager.NameNotFoundException e) {
+                                            Log.d("Package Manager error", "package not found", e);
+                                        }
                                         Intent intent = new Intent(getApplicationContext(), MetFriendActivity.class);
                                         Bundle bundle = new Bundle();
                                         bundle.putString("name", name);
+                                        bundle.putString("phone_num", phoneNum);
                                         ArrayList<String> links = new ArrayList<String>();
                                         links.add(fbLink);
+                                        links.add(twitterLink);
                                         bundle.putStringArrayList("links", links);
                                         intent.putExtras(bundle);
                                         startActivity(intent);
