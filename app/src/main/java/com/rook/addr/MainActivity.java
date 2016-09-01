@@ -13,8 +13,11 @@ import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.CheckBox;
+import android.widget.CompoundButton;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 
 import com.backendless.Backendless;
 import com.backendless.BackendlessUser;
@@ -35,9 +38,13 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 
 public class MainActivity extends BaseClass
-        implements NavigationView.OnNavigationItemSelectedListener, View.OnClickListener {
+        implements NavigationView.OnNavigationItemSelectedListener, View.OnClickListener, CompoundButton.OnCheckedChangeListener {
 
     private Button cameraButton;
+    private CheckBox facebookCheck;
+    private CheckBox instagramCheck;
+    private CheckBox twitterCheck;
+    private ImageView qrImage;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -47,6 +54,13 @@ public class MainActivity extends BaseClass
         getLayoutInflater().inflate(R.layout.app_bar_main, frameLayout);
         cameraButton = (Button) findViewById(R.id.camera_image);
         cameraButton.setOnClickListener(this);
+        LinearLayout layout = (LinearLayout) findViewById(R.id.checkboxLayout);
+        facebookCheck = (CheckBox) layout.findViewById(R.id.facebookCheck);
+        facebookCheck.setOnCheckedChangeListener(this);
+        instagramCheck = (CheckBox) layout.findViewById(R.id.instagramCheck);
+        instagramCheck.setOnCheckedChangeListener(this);
+        twitterCheck = (CheckBox) layout.findViewById(R.id.twitterCheck);
+        twitterCheck.setOnCheckedChangeListener(this);
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -56,8 +70,21 @@ public class MainActivity extends BaseClass
     protected void onStart() {
         super.onStart();
         try {
+            facebookCheck.setVisibility(View.VISIBLE);
+            twitterCheck.setVisibility(View.VISIBLE);
+            instagramCheck.setVisibility(View.VISIBLE);
+            BackendlessUser currentUser = Backendless.UserService.CurrentUser();
+            if (currentUser.getProperty("fb_user_id") == null) {
+                facebookCheck.setVisibility(View.GONE);
+            }
+            if (currentUser.getProperty("twitter_user_id") == null) {
+                twitterCheck.setVisibility(View.GONE);
+            }
+            //TODO
+            instagramCheck.setVisibility(View.GONE);
+
             Bitmap bitmap = generateQRCodeBitmap();
-            final ImageView qrImage = (ImageView) findViewById(R.id.qrImage);
+            qrImage = (ImageView) findViewById(R.id.qrImage);
             qrImage.setImageBitmap(bitmap);
         } catch (WriterException e1) {
             e1.printStackTrace();
@@ -73,11 +100,11 @@ public class MainActivity extends BaseClass
         QRCodeWriter writer = new QRCodeWriter();
         JSONObject jsonObject = new JSONObject();
         BackendlessUser currentUser = Backendless.UserService.CurrentUser();
-        if (currentUser.getProperty("fb_user_id") != null) {
+        if (currentUser.getProperty("fb_user_id") != null && facebookCheck.isChecked()) {
             String fbUserId = currentUser.getProperty("fb_user_id").toString();
             jsonObject.put("fb_user_id", fbUserId);
         }
-        if (currentUser.getProperty("twitter_user_id") != null) {
+        if (currentUser.getProperty("twitter_user_id") != null && twitterCheck.isChecked()) {
             String twitterUserId = currentUser.getProperty("twitter_user_id").toString();
             jsonObject.put("twitter_user_id", twitterUserId);
         }
@@ -169,6 +196,17 @@ public class MainActivity extends BaseClass
                 e.printStackTrace();
             }
 
+        }
+    }
+
+    @Override
+    public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
+        try {
+            qrImage.setImageBitmap(generateQRCodeBitmap());
+        } catch (WriterException e) {
+            e.printStackTrace();
+        } catch (JSONException e) {
+            e.printStackTrace();
         }
     }
 }

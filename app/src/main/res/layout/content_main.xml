@@ -14,10 +14,40 @@
     tools:showIn="@layout/app_bar_main">
 
     <TextView
-        android:id="@+id/editText"
+        android:id="@+id/instructionTv"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Hello World!" />
+        android:text="Select Profiles to send" />
+
+    <LinearLayout
+        android:id="@+id/checkboxLayout"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/instructionTv"
+        android:orientation="horizontal">
+
+        <CheckBox
+            android:id="@+id/facebookCheck"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="10dp"
+            android:text="Facebook" />
+
+        <CheckBox
+            android:id="@+id/instagramCheck"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="10dp"
+            android:text="Instagram" />
+
+        <CheckBox
+            android:id="@+id/twitterCheck"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="10dp"
+            android:text="Twitter" />
+
+    </LinearLayout>
 
     <ImageView
         android:id="@+id/qrImage"
@@ -25,6 +55,5 @@
         android:layout_height="wrap_content"
         android:layout_centerHorizontal="true"
         android:layout_centerVertical="true" />
-
 
 </RelativeLayout>
