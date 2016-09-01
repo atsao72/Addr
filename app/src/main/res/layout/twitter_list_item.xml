@@ -11,7 +11,7 @@
         android:layout_marginLeft="15dp"
         android:layout_marginStart="15dp"
         android:layout_marginTop="10dp"
-        android:text="Twitter" />
+        android:text="@string/twitter" />
 
     <com.rook.addr.CustomTwitterLoginButton
         android:id="@+id/twitter_login_button"

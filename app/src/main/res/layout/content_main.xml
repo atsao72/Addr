@@ -31,21 +31,21 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_margin="10dp"
-            android:text="Facebook" />
+            android:text="@string/facebook" />
 
         <CheckBox
             android:id="@+id/instagramCheck"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_margin="10dp"
-            android:text="Instagram" />
+            android:text="@string/instagram" />
 
         <CheckBox
             android:id="@+id/twitterCheck"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_margin="10dp"
-            android:text="Twitter" />
+            android:text="@string/twitter" />
 
     </LinearLayout>
 

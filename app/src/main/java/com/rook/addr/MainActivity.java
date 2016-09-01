@@ -35,8 +35,6 @@ import com.google.zxing.qrcode.QRCodeWriter;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.util.ArrayList;
-
 public class MainActivity extends BaseClass
         implements NavigationView.OnNavigationItemSelectedListener, View.OnClickListener, CompoundButton.OnCheckedChangeListener {
 
@@ -145,13 +143,22 @@ public class MainActivity extends BaseClass
             //get the extras that are returned from the intent
             IntentResult scanResult = IntentIntegrator.parseActivityResult(requestCode, resultCode, intent);
             String contents = scanResult.getContents();
+            JSONObject jsonObject;
+            Intent newIntent = new Intent(getApplicationContext(), MetFriendActivity.class);
+            final Bundle bundle = new Bundle();
             try {
-                JSONObject jsonObject = new JSONObject(contents);
-                String userIdStr = "/" + jsonObject.getString("fb_user_id");
+                jsonObject = new JSONObject(contents);
                 final String name = jsonObject.getString("name");
                 final String phoneNum = jsonObject.getString("phone_num");
-                final String twitterUserId = jsonObject.getString("twitter_user_id");
-                /* make the API call */
+                bundle.putString("name", name);
+                bundle.putString("phone_num", phoneNum);
+            } catch (JSONException e) {
+                //Shouldn't happen.
+                Log.d("JSON", "Error getting name or phone_num", e);
+                return;
+            }
+            try {
+                String userIdStr = "/" + jsonObject.getString("fb_user_id");
                 new GraphRequest(AccessToken.getCurrentAccessToken(), userIdStr, null, HttpMethod.GET,
                         new GraphRequest.Callback() {
                             public void onCompleted(final GraphResponse response) {
@@ -160,7 +167,6 @@ public class MainActivity extends BaseClass
                                     final String id = object.getString("id");
                                     String fbLink = "https://www.facebook.com/" + id;
                                     PackageManager pm = getApplicationContext().getPackageManager();
-
                                     try {
                                         ApplicationInfo applicationInfo = pm.getApplicationInfo("com.facebook.katana", 0);
                                         if (applicationInfo.enabled) {
@@ -169,23 +175,7 @@ public class MainActivity extends BaseClass
                                     } catch (PackageManager.NameNotFoundException e) {
                                         System.out.println("package not found");
                                     }
-                                    String twitterLink = "twitter.com";
-                                    try {
-                                        pm.getApplicationInfo("com.twitter.android", 0);
-                                        twitterLink = "twitter://user?user_id=" + twitterUserId;
-                                    } catch (PackageManager.NameNotFoundException e) {
-                                        Log.d("Package Manager error", "package not found", e);
-                                    }
-                                    Intent intent = new Intent(getApplicationContext(), MetFriendActivity.class);
-                                    Bundle bundle = new Bundle();
-                                    bundle.putString("name", name);
-                                    bundle.putString("phone_num", phoneNum);
-                                    ArrayList<String> links = new ArrayList<String>();
-                                    links.add(fbLink);
-                                    links.add(twitterLink);
-                                    bundle.putStringArrayList("links", links);
-                                    intent.putExtras(bundle);
-                                    startActivity(intent);
+                                    bundle.putString("fbLink", fbLink);
                                 } catch (JSONException e) {
                                     e.printStackTrace();
                                 }
@@ -193,9 +183,27 @@ public class MainActivity extends BaseClass
                         }
                 ).executeAsync();
             } catch (JSONException e) {
-                e.printStackTrace();
+                //No Facebook string.
+                Log.d("JSON", "Did not transfer facebook info", e);
+            }
+            try {
+                final String twitterUserId = jsonObject.getString("twitter_user_id");
+                String twitterLink = "twitter.com";
+                PackageManager pm = getApplicationContext().getPackageManager();
+                try {
+                    pm.getApplicationInfo("com.twitter.android", 0);
+                    twitterLink = "twitter://user?user_id=" + twitterUserId;
+                } catch (PackageManager.NameNotFoundException e) {
+                    Log.d("Package Manager error", "package not found", e);
+                }
+                bundle.putString("twitterLink", twitterLink);
+            } catch (JSONException e) {
+                //No Twitter string.
+                Log.d("JSON", "Did not transfer Twitter info", e);
             }
 
+            newIntent.putExtras(bundle);
+            startActivity(newIntent);
         }
     }
 

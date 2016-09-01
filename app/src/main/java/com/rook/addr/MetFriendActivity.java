@@ -8,7 +8,7 @@ import android.widget.FrameLayout;
 import android.widget.ListView;
 import android.widget.TextView;
 
-import java.util.ArrayList;
+import java.util.HashMap;
 
 /**
  * Created by Austin on 8/26/2016.
@@ -34,9 +34,14 @@ public class MetFriendActivity extends BaseClass {
         Bundle bundle = getIntent().getExtras();
         name = bundle.getString("name");
         phoneNumber = bundle.getString("phone_num");
-        ArrayList<String> links = bundle.getStringArrayList("links");
-        fbLink = Uri.parse(links.get(0));
-        twitterLink = Uri.parse(links.get(1));
+        String facebook = bundle.getString("fbLink");
+        if (facebook != null) {
+            fbLink = Uri.parse(facebook);
+        }
+        String twitter = bundle.getString("twitterLink");
+        if (twitter != null) {
+            twitterLink = Uri.parse(twitter);
+        }
         nameTv = (TextView) findViewById(R.id.introTextView);
         phoneTv = (TextView) findViewById(R.id.phoneTextView);
         accountsLv = (ListView) findViewById(R.id.accountsListView);
@@ -47,12 +52,14 @@ public class MetFriendActivity extends BaseClass {
         nameTv.setText(name);
         String newText = phoneTv.getText().toString() + phoneNumber;
         phoneTv.setText(newText);
-        Uri[] accountLinks = new Uri[3];
+//        Uri[] accountLinks = new Uri[3];
+        HashMap<String, Uri> accountLinks = new HashMap<>();
         if (fbLink != null && !fbLink.toString().isEmpty()) {
-            accountLinks[0] = fbLink;
+//            accountLinks[0] = fbLink;
+            accountLinks.put(getString(R.string.facebook), fbLink);
         }
         if (twitterLink != null && !twitterLink.toString().isEmpty()) {
-            accountLinks[2] = twitterLink;
+            accountLinks.put(getString(R.string.twitter), twitterLink);
         }
         accountsLv.setAdapter(new ProfileListAdapter(this, accountLinks));
 

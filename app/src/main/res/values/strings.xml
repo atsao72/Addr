@@ -10,9 +10,7 @@
     <string name="instagram_client_secret">a4c3c87e8a9f45949a801cc3c8e76dcd</string>
     <string name="twitter_key">Tfjl4KvnLdNhTGNJwWmlxTOdt</string>
     <string name="twitter_secret">9G6r8gpCFZMXCuiEB4mk3aYH4Bj0iC3KpuIBxLYxqnZx5AXkuT</string>
-    <string-array name="accountsList">
-        <item>Add Facebook Account</item>
-        <item>Add Instagram Account</item>
-        <item>Add Twitter Account</item>
-    </string-array>
+    <string name="facebook">Facebook</string>
+    <string name="twitter">Twitter</string>
+    <string name="instagram">Instagram</string>
 </resources>
