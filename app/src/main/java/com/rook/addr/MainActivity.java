@@ -144,7 +144,7 @@ public class MainActivity extends BaseClass
             IntentResult scanResult = IntentIntegrator.parseActivityResult(requestCode, resultCode, intent);
             String contents = scanResult.getContents();
             JSONObject jsonObject;
-            Intent newIntent = new Intent(getApplicationContext(), MetFriendActivity.class);
+            final Intent newIntent = new Intent(getApplicationContext(), MetFriendActivity.class);
             final Bundle bundle = new Bundle();
             try {
                 jsonObject = new JSONObject(contents);
@@ -157,6 +157,22 @@ public class MainActivity extends BaseClass
                 Log.d("JSON", "Error getting name or phone_num", e);
                 return;
             }
+            try {
+                final String twitterUserId = jsonObject.getString("twitter_user_id");
+                String twitterLink = "twitter.com";
+                PackageManager pm = getApplicationContext().getPackageManager();
+                try {
+                    pm.getApplicationInfo("com.twitter.android", 0);
+                    twitterLink = "twitter://user?user_id=" + twitterUserId;
+                } catch (PackageManager.NameNotFoundException e) {
+                    Log.d("Package Manager error", "package not found", e);
+                }
+                bundle.putString("twitterLink", twitterLink);
+            } catch (JSONException e) {
+                //No Twitter string.
+                Log.d("JSON", "Did not transfer Twitter info", e);
+            }
+
             try {
                 String userIdStr = "/" + jsonObject.getString("fb_user_id");
                 new GraphRequest(AccessToken.getCurrentAccessToken(), userIdStr, null, HttpMethod.GET,
@@ -176,6 +192,8 @@ public class MainActivity extends BaseClass
                                         System.out.println("package not found");
                                     }
                                     bundle.putString("fbLink", fbLink);
+                                    newIntent.putExtras(bundle);
+                                    startActivity(newIntent);
                                 } catch (JSONException e) {
                                     e.printStackTrace();
                                 }
@@ -185,25 +203,9 @@ public class MainActivity extends BaseClass
             } catch (JSONException e) {
                 //No Facebook string.
                 Log.d("JSON", "Did not transfer facebook info", e);
+                newIntent.putExtras(bundle);
+                startActivity(newIntent);
             }
-            try {
-                final String twitterUserId = jsonObject.getString("twitter_user_id");
-                String twitterLink = "twitter.com";
-                PackageManager pm = getApplicationContext().getPackageManager();
-                try {
-                    pm.getApplicationInfo("com.twitter.android", 0);
-                    twitterLink = "twitter://user?user_id=" + twitterUserId;
-                } catch (PackageManager.NameNotFoundException e) {
-                    Log.d("Package Manager error", "package not found", e);
-                }
-                bundle.putString("twitterLink", twitterLink);
-            } catch (JSONException e) {
-                //No Twitter string.
-                Log.d("JSON", "Did not transfer Twitter info", e);
-            }
-
-            newIntent.putExtras(bundle);
-            startActivity(newIntent);
         }
     }
 
