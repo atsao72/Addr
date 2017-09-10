@@ -39,7 +39,8 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
 
         FacebookSdk.sdkInitialize(getApplicationContext());
         AppEventsLogger.activateApp(getApplication());
-        Backendless.initApp(getBaseContext(), getString(R.string.app_id), getString(R.string.secret_key), BuildConfig.VERSION_NAME);
+        Backendless.setUrl(getString(R.string.server_url));
+        Backendless.initApp(this, getString(R.string.app_id), getString(R.string.secret_key));
 
         String userToken = UserTokenStorageFactory.instance().getStorage().get();
 

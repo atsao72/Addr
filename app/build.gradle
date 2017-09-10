@@ -36,16 +36,15 @@ repositories {
 }
 
 dependencies {
-    compile fileTree(dir: 'libs', include: ['*.jar'])
+    compile fileTree(include: ['*.jar'], dir: 'libs')
     testCompile 'junit:junit:4.12'
     compile 'com.android.support:appcompat-v7:24.1.1'
     compile 'com.android.support:design:24.1.1'
     compile 'com.facebook.android:facebook-android-sdk:[4,5)'
-    compile 'com.backendless:backendless:3.0.20.1'
     compile 'com.journeyapps:zxing-android-embedded:3.0.0@aar'
     compile 'com.google.zxing:core:3.2.1'
     compile('com.twitter.sdk.android:twitter:2.0.0@aar') {
         transitive = true;
     }
-
+    compile 'com.backendless:backendless:4.0.3'
 }
